@@ -789,10 +789,262 @@ function Card4bESMO() {
 }
 
 /* =========================================================
-   CARD 5a · AZ + MEDIAN - the loop
+   CARD 5 · BLUE OCEAN STRATEGY CANVAS
    ========================================================= */
 
-function Card5aLoop() {
+const canvasFactors = [
+  { label: 'Drug Portfolio', short: 'Drugs' },
+  { label: 'Diagnostics Ownership', short: 'Dx' },
+  { label: 'Point AI', short: 'AI' },
+  { label: 'Data Infra', short: 'Data' },
+  { label: 'Screening Reach', short: 'Screen' },
+  { label: 'Pathway Coordination', short: 'Coord' },
+  { label: 'Trial Activation', short: 'Trial' },
+]
+
+const canvasData = {
+  azToday:  [4, 2, 3, 4, 4, 2, 3],
+  roche:    [4, 5, 4, 5, 3, 3, 3],
+  msd:      [5, 1, 3, 3, 2, 2, 4],
+  novartis: [4, 3, 3, 4, 2, 2, 3],
+  azNew:    [4, 3, 3, 4, 5, 5, 5],
+}
+
+function Card5Canvas() {
+  const W = 800, H = 420, padL = 70, padR = 40, padT = 50, padB = 70
+  const chartW = W - padL - padR
+  const chartH = H - padT - padB
+  const stepX = chartW / (canvasFactors.length - 1)
+  const xOf = (i) => padL + i * stepX
+  const yOf = (v) => padT + ((5 - v) / 4) * chartH
+
+  const toPath = (data) =>
+    data.map((v, i) => `${i === 0 ? 'M' : 'L'} ${xOf(i)},${yOf(v)}`).join(' ')
+
+  const lines = [
+    { key: 'azToday',  color: '#9CA3AF', width: 2, dash: '6 4', label: 'AZ Today' },
+    { key: 'roche',    color: '#6B7280', width: 1.5, dash: '3 3', label: 'Roche' },
+    { key: 'msd',      color: '#9B8AAE', width: 1.5, dash: '3 3', label: 'MSD' },
+    { key: 'novartis', color: '#C9851D', width: 1.5, dash: '3 3', label: 'Novartis' },
+    { key: 'azNew',    color: '#830051', width: 3.5, dash: '', label: 'AZ New Strategy' },
+  ]
+
+  return (
+    <Card
+      eyebrow="BLUE OCEAN"
+      title="Strategy Canvas"
+      prompts={[
+        'Red Ocean: drugs, diagnostics, point AI are crowded',
+        'Blue Ocean: coordination layer is empty',
+        'AZ new curve rises sharply on right side',
+        'Nobody else is playing there',
+      ]}
+      source="Blue Ocean Strategy (Kim & Mauborgne). Competitive analysis. EDHEC team."
+    >
+      <div className="flex h-full flex-col justify-center">
+        <div className="rounded-2xl border border-az-border bg-white p-4 shadow-card md:p-6">
+          <svg viewBox={`0 0 ${W} ${H}`} className="h-auto w-full">
+            {/* Y-axis labels */}
+            {[1, 2, 3, 4, 5].map((v) => (
+              <g key={v}>
+                <line
+                  x1={padL} y1={yOf(v)} x2={W - padR} y2={yOf(v)}
+                  stroke="#E5E8EE" strokeWidth="1"
+                />
+                <text
+                  x={padL - 12} y={yOf(v) + 4}
+                  textAnchor="end" fontFamily="Montserrat" fontSize="11" fontWeight="600" fill="#9CA3AF"
+                >
+                  {v}
+                </text>
+              </g>
+            ))}
+
+            {/* X-axis labels */}
+            {canvasFactors.map((f, i) => (
+              <text
+                key={f.label}
+                x={xOf(i)} y={H - padB + 22}
+                textAnchor="middle" fontFamily="Montserrat" fontSize="10" fontWeight="700" fill="#1C2B5E"
+                style={{ letterSpacing: '0.5px' }}
+              >
+                {f.short}
+              </text>
+            ))}
+
+            {/* Lines */}
+            {lines.map((l, li) => (
+              <motion.path
+                key={l.key}
+                d={toPath(canvasData[l.key])}
+                stroke={l.color}
+                strokeWidth={l.width}
+                strokeDasharray={l.dash}
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                initial={{ pathLength: 0, opacity: 0 }}
+                animate={{ pathLength: 1, opacity: 1 }}
+                transition={{ delay: 0.3 + li * 0.15, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+              />
+            ))}
+
+            {/* Dots for AZ New */}
+            {canvasData.azNew.map((v, i) => (
+              <motion.circle
+                key={i}
+                cx={xOf(i)} cy={yOf(v)} r="6"
+                fill="#830051"
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 1.2 + i * 0.08, duration: 0.4, type: 'spring', damping: 12 }}
+              />
+            ))}
+
+            {/* Y-axis title */}
+            <text
+              x={18} y={H / 2}
+              textAnchor="middle" fontFamily="Montserrat" fontSize="10" fontWeight="700" fill="#6B7280"
+              transform={`rotate(-90, 18, ${H / 2})`}
+              style={{ letterSpacing: '1.5px' }}
+            >
+              LEVEL
+            </text>
+          </svg>
+        </div>
+
+        {/* Legend */}
+        <div className="mt-4 flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+          {lines.map((l) => (
+            <div key={l.key} className="flex items-center gap-2">
+              <span
+                className="inline-block h-[3px] w-6 rounded"
+                style={{
+                  backgroundColor: l.color,
+                  ...(l.dash ? { backgroundImage: `repeating-linear-gradient(90deg, ${l.color} 0, ${l.color} 3px, transparent 3px, transparent 6px)`, backgroundColor: 'transparent' } : {}),
+                }}
+              />
+              <span className="font-mono text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: l.color }}>
+                {l.label}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </Card>
+  )
+}
+
+/* =========================================================
+   CARD 5b · COMPETITIVE SCORING MATRIX (7 factors)
+   ========================================================= */
+
+const scoringFactors = [
+  { factor: 'Drug Portfolio Strength',   azToday: 4, roche: 4, msd: 5, novartis: 4, azNew: 4 },
+  { factor: 'Diagnostics Ownership',     azToday: 2, roche: 5, msd: 1, novartis: 3, azNew: 3 },
+  { factor: 'Point AI Capabilities',     azToday: 3, roche: 4, msd: 3, novartis: 3, azNew: 3 },
+  { factor: 'Data Infrastructure',       azToday: 4, roche: 5, msd: 3, novartis: 4, azNew: 4 },
+  { factor: 'Screening Ecosystem Reach', azToday: 4, roche: 3, msd: 2, novartis: 2, azNew: 5 },
+  { factor: 'Patient Pathway Coordination', azToday: 2, roche: 3, msd: 2, novartis: 2, azNew: 5 },
+  { factor: 'Trial-to-Treatment Activation', azToday: 3, roche: 3, msd: 4, novartis: 3, azNew: 5 },
+]
+
+const scoreDots = (n, highlight = false) => {
+  const filled = highlight ? 'bg-az-magenta' : 'bg-az-navy'
+  const empty = 'bg-az-light'
+  return (
+    <div className="flex gap-1">
+      {[1, 2, 3, 4, 5].map((i) => (
+        <span
+          key={i}
+          className={`h-2 w-2 rounded-full ${i <= n ? filled : empty}`}
+        />
+      ))}
+    </div>
+  )
+}
+
+function Card5bScoring() {
+  return (
+    <Card
+      eyebrow="BLUE OCEAN"
+      title="Competitive Scoring"
+      prompts={[
+        'Red Ocean factors: everyone scores similarly',
+        'Blue Ocean factors: AZ jumps from 2-3 to 5',
+        'This is where uncontested space lives',
+      ]}
+      source="Blue Ocean Strategy (Kim & Mauborgne). Competitive analysis. EDHEC team."
+    >
+      <div className="az-scroll overflow-x-auto rounded-2xl border border-az-border bg-white shadow-card">
+        <table className="w-full min-w-[800px] border-collapse text-left">
+          <thead className="bg-az-light">
+            <tr>
+              <th className="px-4 py-3 font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-az-muted">
+                Factor
+              </th>
+              <th className="px-3 py-3 font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-az-muted">
+                AZ Today
+              </th>
+              <th className="px-3 py-3 font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-az-muted">
+                Roche
+              </th>
+              <th className="px-3 py-3 font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-az-muted">
+                MSD
+              </th>
+              <th className="px-3 py-3 font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-az-muted">
+                Novartis
+              </th>
+              <th className="px-3 py-3 font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-az-magenta">
+                AZ New ★
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {scoringFactors.map((row, i) => {
+              const isBlueOcean = row.factor.includes('Screening') || row.factor.includes('Pathway') || row.factor.includes('Trial')
+              return (
+                <motion.tr
+                  key={row.factor}
+                  initial={{ opacity: 0, x: -8 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.15 + i * 0.07, duration: 0.5 }}
+                  className={`border-t border-az-border ${isBlueOcean ? 'bg-az-magenta/5' : ''}`}
+                >
+                  <td className="px-4 py-3">
+                    <span className={`font-display text-sm italic ${isBlueOcean ? 'text-az-magenta font-bold' : 'text-az-navy'}`}>
+                      {row.factor}
+                    </span>
+                  </td>
+                  <td className="px-3 py-3">{scoreDots(row.azToday)}</td>
+                  <td className="px-3 py-3">{scoreDots(row.roche)}</td>
+                  <td className="px-3 py-3">{scoreDots(row.msd)}</td>
+                  <td className="px-3 py-3">{scoreDots(row.novartis)}</td>
+                  <td className="px-3 py-3">{scoreDots(row.azNew, true)}</td>
+                </motion.tr>
+              )
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      <motion.p
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.9, duration: 0.6 }}
+        className="mt-4 text-center font-display text-lg italic text-az-navy md:text-xl"
+      >
+        The bottom three rows are <span className="text-az-magenta font-bold">blue ocean</span> — empty space where AZ can lead.
+      </motion.p>
+    </Card>
+  )
+}
+
+/* =========================================================
+   CARD 6a · AZ + MEDIAN - the loop
+   ========================================================= */
+
+function Card6aLoop() {
   const stops = [
     { label: 'SCREEN',        sub: 'Median AI',      color: '#F5A623', angle: -90 },
     { label: 'FIND IT',       sub: 'Nodule flagged', color: '#F5A623', angle: -30 },
@@ -882,10 +1134,10 @@ function Card5aLoop() {
 }
 
 /* =========================================================
-   CARD 5b · WHAT EACH COMPANY BRINGS
+   CARD 6b · WHAT EACH COMPANY BRINGS
    ========================================================= */
 
-function Card5bBrings() {
+function Card6bBrings() {
   return (
     <Card
       eyebrow="AZ + MEDIAN"
@@ -980,8 +1232,10 @@ export default function Strategy() {
         <Card3bData      key="azdata"   />,
         <Card4aTrust     key="trust"    />,
         <Card4bESMO      key="esmo"     />,
-        <Card5aLoop      key="loop"     />,
-        <Card5bBrings    key="brings"   />,
+        <Card5Canvas     key="canvas"   />,
+        <Card5bScoring   key="scoring"  />,
+        <Card6aLoop      key="loop"     />,
+        <Card6bBrings    key="brings"   />,
       ]}
     />
   )

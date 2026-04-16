@@ -5,7 +5,7 @@ import { Check, Route, Beaker, Hospital, Truck } from '../shared/Icons'
 
 /* =========================================================
    CH 04 · THE SOLUTION
-   Seven cards. White / brand design. Speaker prompts on every card.
+   Eight cards. White / brand design. Speaker prompts on every card.
    Phase 1 cost = £15-30M (aligned with Ch 5).
    ========================================================= */
 
@@ -473,7 +473,171 @@ function Card4Agents() {
 }
 
 /* =========================================================
-   CARD 4.5 - ONE PATIENT, SIX STEPS (fixed journey)
+   CARD 4.5 - THE DATA LAYER · FEDERATED LEARNING
+   ========================================================= */
+
+function Card5Federated() {
+  const nodes = [
+    { label: 'NHS TRUST 1', x: 80,  y: 100 },
+    { label: 'NHS TRUST 2', x: 240, y: 100 },
+    { label: 'NHS TRUST 3', x: 400, y: 100 },
+  ]
+
+  return (
+    <Card
+      eyebrow="THE DATA LAYER"
+      title="Federated learning: data never moves"
+      prompts={[
+        'Patient data stays inside NHS servers',
+        'AI models train locally at each trust',
+        'Only model updates flow back - not patient records',
+        'MELLODDY: AZ already proved this across 10 pharma companies',
+      ]}
+      source="MELLODDY consortium (Nature Machine Intelligence 2023). NHS Data Partnership framework. ICO federated learning guidance."
+    >
+      {/* AI type callout */}
+      <AITypeCallout
+        label="WHY THIS MATTERS"
+        type="Federated Learning"
+        plain="The AI travels to the data, not the other way around. Each hospital keeps full control of patient records. The system learns from everyone without anyone sharing sensitive information."
+      />
+
+      {/* Visual: Three NHS trusts with local models, central aggregator */}
+      <div className="mt-6 flex justify-center">
+        <svg viewBox="0 0 480 280" className="h-auto w-full max-w-[600px]">
+          {/* NHS Trust boxes */}
+          {nodes.map((node, i) => (
+            <motion.g
+              key={node.label}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 + i * 0.15, duration: 0.7 }}
+            >
+              <rect
+                x={node.x - 55} y={node.y - 35}
+                width="110" height="70" rx="12"
+                fill="#FFFFFF" stroke="#1C2B5E" strokeWidth="2"
+              />
+              <text x={node.x} y={node.y - 8} textAnchor="middle" fontFamily="Montserrat" fontSize="11" fontWeight="700" letterSpacing="1" fill="#1C2B5E">
+                {node.label}
+              </text>
+              <text x={node.x} y={node.y + 12} textAnchor="middle" fontFamily="Montserrat" fontSize="9" fontWeight="600" fill="#6B7280">
+                DATA STAYS HERE
+              </text>
+              {/* Lock icon */}
+              <circle cx={node.x + 38} cy={node.y - 20} r="10" fill="#10B981" />
+              <path d={`M ${node.x + 34} ${node.y - 20} L ${node.x + 42} ${node.y - 20} M ${node.x + 38} ${node.y - 24} L ${node.x + 38} ${node.y - 16}`} stroke="white" strokeWidth="2" strokeLinecap="round" />
+            </motion.g>
+          ))}
+
+          {/* Arrows down from trusts */}
+          {nodes.map((node, i) => (
+            <motion.g
+              key={`arrow-${i}`}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.7 + i * 0.1, duration: 0.5 }}
+            >
+              <path
+                d={`M ${node.x} 75 L ${node.x} 55`}
+                stroke="#830051" strokeWidth="2" markerEnd="url(#arrowUp)"
+              />
+              <path
+                d={`M ${node.x} 175 L ${node.x} 195`}
+                stroke="#830051" strokeWidth="2" strokeDasharray="4 3"
+              />
+            </motion.g>
+          ))}
+
+          {/* Central aggregator */}
+          <motion.g
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 1.0, duration: 0.7, type: 'spring', damping: 14 }}
+          >
+            <rect x="140" y="200" width="200" height="60" rx="12" fill="#830051" />
+            <text x="240" y="225" textAnchor="middle" fontFamily="Montserrat" fontSize="12" fontWeight="700" letterSpacing="1.5" fill="white">
+              CENTRAL AGGREGATOR
+            </text>
+            <text x="240" y="245" textAnchor="middle" fontFamily="Montserrat" fontSize="10" fontWeight="600" fill="#F0AB00">
+              COMBINES MODEL UPDATES ONLY
+            </text>
+          </motion.g>
+
+          {/* Arrows from aggregator back up */}
+          <defs>
+            <marker id="arrowUp" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+              <path d="M 0 6 L 4 0 L 8 6" fill="none" stroke="#830051" strokeWidth="1.5" />
+            </marker>
+          </defs>
+
+          {/* Labels for data flow */}
+          <motion.text
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.3, duration: 0.5 }}
+            x="60" y="145" fontFamily="Montserrat" fontSize="8" fontWeight="700" letterSpacing="0.5" fill="#830051"
+          >
+            MODEL WEIGHTS
+          </motion.text>
+          <motion.text
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.3, duration: 0.5 }}
+            x="380" y="145" fontFamily="Montserrat" fontSize="8" fontWeight="700" letterSpacing="0.5" fill="#830051"
+          >
+            MODEL WEIGHTS
+          </motion.text>
+        </svg>
+      </div>
+
+      {/* Two key proof points */}
+      <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+        <motion.div
+          initial={{ opacity: 0, x: -14 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 1.4, duration: 0.7 }}
+          className="rounded-xl border-[2px] border-az-gold bg-white p-5 shadow-card"
+        >
+          <div className="font-mono text-[10px] font-bold uppercase tracking-[0.28em] text-az-gold-deep">
+            MELLODDY CONSORTIUM
+          </div>
+          <p className="mt-2 text-sm leading-relaxed text-az-charcoal md:text-base">
+            AstraZeneca already ran a federated node across <span className="font-bold text-az-navy">10 pharmaceutical companies</span>. The approach is proven at scale.
+          </p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, x: 14 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 1.55, duration: 0.7 }}
+          className="rounded-xl border-[2px] border-emerald-500 bg-white p-5 shadow-card"
+        >
+          <div className="font-mono text-[10px] font-bold uppercase tracking-[0.28em] text-emerald-600">
+            NHS COMPATIBILITY
+          </div>
+          <p className="mt-2 text-sm leading-relaxed text-az-charcoal md:text-base">
+            No data sharing agreements needed between trusts. Each trust keeps <span className="font-bold text-az-navy">full sovereignty</span> over patient records.
+          </p>
+        </motion.div>
+      </div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1.8, duration: 0.7 }}
+        className="mt-6 rounded-xl bg-az-navy p-5 text-center text-white shadow-card-navy"
+      >
+        <p className="font-display text-xl italic md:text-2xl">
+          This is how multiple NHS trusts can participate <span className="text-az-gold">without moving a single patient record.</span>
+        </p>
+      </motion.div>
+    </Card>
+  )
+}
+
+/* =========================================================
+   CARD 4.6 - ONE PATIENT, SIX STEPS (fixed journey)
    ========================================================= */
 
 const steps = [
@@ -485,7 +649,7 @@ const steps = [
   { n: 6, title: 'ENROLLED',         body: 'Treatment begins.' },
 ]
 
-function Card5Journey() {
+function Card6Journey() {
   return (
     <Card
       eyebrow="ONE PATIENT"
@@ -585,10 +749,10 @@ function Card5Journey() {
 }
 
 /* =========================================================
-   CARD 4.6 - WHAT THIS DELIVERS
+   CARD 4.7 - WHAT THIS DELIVERS
    ========================================================= */
 
-function Card6Value() {
+function Card7Value() {
   return (
     <Card
       eyebrow="ADDED VALUE"
@@ -695,10 +859,10 @@ function StreamDot({ color, text }) {
 }
 
 /* =========================================================
-   CARD 4.7 - UK FIRST
+   CARD 4.8 - UK FIRST
    ========================================================= */
 
-function Card7GTM() {
+function Card8GTM() {
   return (
     <Card
       eyebrow="GO-TO-MARKET"
@@ -818,9 +982,10 @@ export default function Solution() {
         <Card2Screening  key="screening"  />,
         <Card3Pathology  key="pathology"  />,
         <Card4Agents     key="agents"     />,
-        <Card5Journey    key="journey"    />,
-        <Card6Value      key="value"      />,
-        <Card7GTM        key="gtm"        />,
+        <Card5Federated  key="federated"  />,
+        <Card6Journey    key="journey"    />,
+        <Card7Value      key="value"      />,
+        <Card8GTM        key="gtm"        />,
       ]}
     />
   )

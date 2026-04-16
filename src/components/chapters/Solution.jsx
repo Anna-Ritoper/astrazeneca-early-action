@@ -539,11 +539,7 @@ function Card5Federated() {
               transition={{ delay: 0.7 + i * 0.1, duration: 0.5 }}
             >
               <path
-                d={`M ${node.x} 75 L ${node.x} 55`}
-                stroke="#830051" strokeWidth="2" markerEnd="url(#arrowUp)"
-              />
-              <path
-                d={`M ${node.x} 175 L ${node.x} 195`}
+                d={`M ${node.x} 135 L ${node.x} 195`}
                 stroke="#830051" strokeWidth="2" strokeDasharray="4 3"
               />
             </motion.g>

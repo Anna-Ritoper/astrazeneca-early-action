@@ -1052,7 +1052,7 @@ function Card5bScoring() {
         transition={{ delay: 0.9, duration: 0.6 }}
         className="mt-4 text-center font-display text-lg italic text-az-navy md:text-xl"
       >
-        The bottom three rows are <span className="text-az-magenta font-bold">blue ocean</span> — empty space where AZ can lead.
+        The bottom three rows are <span className="text-az-magenta font-bold">blue ocean</span>: empty space where AZ can lead.
       </motion.p>
     </Card>
   )
